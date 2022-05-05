@@ -52,10 +52,11 @@ class HomeScreenState extends State<HomeScreen> {
         MediaQuery.of(context).size.height, MediaQuery.of(context).size.width);
 
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.white,
       body: Stack(
         children: [
-          ..._buildTrees(),
+          _buildLandscape(),
+          ..._buildTrees(screenHeight!, screenWidth!),
           Center(
             child: AspectRatio(
               aspectRatio: 1,
@@ -75,9 +76,36 @@ class HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
+          _buildCrosshair(),
           _buildJoystick(),
         ],
       ),
+    );
+  }
+
+  Widget _buildLandscape() {
+    return Container(
+      color: Colors.blueAccent,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          Flexible(
+            child: FractionallySizedBox(
+              heightFactor: 0.5,
+              child: Container(
+                color: Colors.lime,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCrosshair() {
+    return const Center(
+      child: Icon(Icons.add_sharp),
     );
   }
 
@@ -108,9 +136,11 @@ class HomeScreenState extends State<HomeScreen> {
       output.add(
         Positioned(
           left: _screenHeight / (Values.mapSizeX * 2) * tree.pos.x +
-              _screenHeight / 2,
+              _screenHeight / 2 -
+              2.5,
           top: _screenHeight / (Values.mapSizeY * 2) * tree.pos.y +
-              _screenHeight / 2,
+              _screenHeight / 2 -
+              2.5,
           child: Container(
             color: Colors.green,
             width: 5.0,
@@ -126,9 +156,11 @@ class HomeScreenState extends State<HomeScreen> {
   Widget _buildMapPlayer(double _screenHeight) {
     return Positioned(
       left: _screenHeight / (Values.mapSizeX * 2) * GameProcess().player.pos.x +
-          _screenHeight / 2,
+          _screenHeight / 2 -
+          2.5,
       top: _screenHeight / (Values.mapSizeY * 2) * GameProcess().player.pos.y +
-          _screenHeight / 2,
+          _screenHeight / 2 -
+          2.5,
       child: Container(
         color: Colors.red,
         width: 5.0,
@@ -137,23 +169,53 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  List<Widget> _buildTrees() {
+  List<Widget> _buildTrees(double _screenHeight, double _screenWidth) {
     List<Widget> output = [];
     for (Tree tree in GameProcess().trees) {
-      double baseHeight = 100;
+      double baseHeight = 8;
+      double baseWidth = 2;
+      double playerHeight = 2;
 
-      double height = 50;
+      double height = 0;
+      double width = 0;
       double left = 0;
       double bottom = 50;
+
+      double angle = MyFormulas.angleFromTwoPoints(
+        GameProcess().player.pos.x,
+        GameProcess().player.pos.y,
+        tree.pos.x,
+        tree.pos.y,
+      );
+
+      if (angle > Values.fov ~/ 2 || angle < -Values.fov ~/ 2) continue;
 
       double distance = sqrt(
         pow(GameProcess().player.pos.x - tree.pos.x, 2) +
             pow(GameProcess().player.pos.y - tree.pos.y, 2),
       );
 
-      double angle = MyFormulas.angleFromTwoPoints(GameProcess().player.pos.x,
-          GameProcess().player.pos.y, tree.pos.x, tree.pos.y);
+      double sizeScale = 1.0 / (distance + 1);
 
+      width = baseWidth *
+          _screenWidth /
+          Values.fov *
+          Values.fovObjectViewBaseAngle *
+          sizeScale;
+      height = baseHeight *
+          _screenWidth /
+          Values.fov *
+          Values.fovObjectViewBaseAngle *
+          sizeScale;
+
+      left = _screenWidth / 2 + (angle * _screenWidth / Values.fov - width / 2);
+
+      bottom = _screenHeight / 2 -
+          playerHeight *
+              _screenWidth /
+              Values.fov *
+              Values.fovObjectViewBaseAngle *
+              sizeScale;
 
       output.add(
         Positioned(
@@ -164,7 +226,7 @@ class HomeScreenState extends State<HomeScreen> {
               color: Colors.blueGrey,
               border: Border.all(color: Colors.white, width: 1.0),
             ),
-            width: height / 2,
+            width: width,
             height: height,
           ),
         ),

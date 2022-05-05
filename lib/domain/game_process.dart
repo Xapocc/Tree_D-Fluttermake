@@ -13,9 +13,11 @@ class GameProcess {
 
   GameProcess._constructor() {
     for (int i = 0; i < Values.treesNumber; i++) {
-      
-      trees.add(value)
-      
+      trees.add(Tree(
+        posX: 0,
+        posY: -50,
+      ));
+
       /*trees.add(
         Tree(
           randomizeHeight: true,

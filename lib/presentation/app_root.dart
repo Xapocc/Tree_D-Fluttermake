@@ -16,9 +16,7 @@ class AppRoot extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.red,
       ),
-      home: const SafeArea(
-        child: HomeScreen(),
-      ),
+      home: HomeScreen(),
     );
   }
 }
