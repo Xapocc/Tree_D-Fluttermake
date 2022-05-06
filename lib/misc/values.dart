@@ -1,5 +1,6 @@
 abstract class Values {
   static const double speedMultiplier = 0.1;
+  static const double playerHeight = 2;
   static const int treesNumber = 100;
 
   static const int mapSizeX = 100;

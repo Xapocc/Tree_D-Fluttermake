@@ -67,12 +67,7 @@ class HomeScreenState extends State<HomeScreen> {
                     width: 1.0,
                   ),
                 ),
-                child: Stack(
-                  children: [
-                    ..._buildMapTrees(screenHeight!),
-                    _buildMapPlayer(screenHeight!),
-                  ],
-                ),
+                child: _buildMap(screenHeight!),
               ),
             ),
           ),
@@ -80,6 +75,15 @@ class HomeScreenState extends State<HomeScreen> {
           _buildJoystick(),
         ],
       ),
+    );
+  }
+
+  _buildMap(double _screenHeight) {
+    return Stack(
+      children: [
+        ..._buildMapTrees(_screenHeight),
+        _buildMapPlayer(_screenHeight),
+      ],
     );
   }
 
@@ -170,16 +174,14 @@ class HomeScreenState extends State<HomeScreen> {
   }
 
   List<Widget> _buildTrees(double _screenHeight, double _screenWidth) {
+    GameProcess().rearrangeTrees();
+
     List<Widget> output = [];
     for (Tree tree in GameProcess().trees) {
-      double baseHeight = 8;
-      double baseWidth = 2;
-      double playerHeight = 2;
-
       double height = 0;
       double width = 0;
       double left = 0;
-      double bottom = 50;
+      double bottom = 0;
 
       double angle = MyFormulas.angleFromTwoPoints(
         GameProcess().player.pos.x,
@@ -188,7 +190,7 @@ class HomeScreenState extends State<HomeScreen> {
         tree.pos.y,
       );
 
-      if (angle > Values.fov ~/ 2 || angle < -Values.fov ~/ 2) continue;
+      if (angle > Values.fov * 0.6 || angle < -Values.fov * 0.6) continue;
 
       double distance = sqrt(
         pow(GameProcess().player.pos.x - tree.pos.x, 2) +
@@ -197,12 +199,12 @@ class HomeScreenState extends State<HomeScreen> {
 
       double sizeScale = 1.0 / (distance + 1);
 
-      width = baseWidth *
+      width = tree.width *
           _screenWidth /
           Values.fov *
           Values.fovObjectViewBaseAngle *
           sizeScale;
-      height = baseHeight *
+      height = tree.height *
           _screenWidth /
           Values.fov *
           Values.fovObjectViewBaseAngle *
@@ -211,7 +213,7 @@ class HomeScreenState extends State<HomeScreen> {
       left = _screenWidth / 2 + (angle * _screenWidth / Values.fov - width / 2);
 
       bottom = _screenHeight / 2 -
-          playerHeight *
+          Values.playerHeight *
               _screenWidth /
               Values.fov *
               Values.fovObjectViewBaseAngle *
@@ -223,8 +225,12 @@ class HomeScreenState extends State<HomeScreen> {
           bottom: bottom,
           child: Container(
             decoration: BoxDecoration(
-              color: Colors.blueGrey,
-              border: Border.all(color: Colors.white, width: 1.0),
+              color: Colors.transparent,
+              border: Border.all(color: Colors.transparent, width: 1.0),
+            ),
+            child: Image.asset(
+              "assets/tree.png",
+              fit: BoxFit.fill,
             ),
             width: width,
             height: height,
