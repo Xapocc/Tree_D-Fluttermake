@@ -78,18 +78,14 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  _buildMap(double _screenHeight) {
-    return Stack(
-      children: [
-        ..._buildMapTrees(_screenHeight),
-        _buildMapPlayer(_screenHeight),
-      ],
-    );
-  }
-
   Widget _buildLandscape() {
     return Container(
-      color: Colors.blueAccent,
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.lightBlueAccent, Colors.blue]),
+      ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         mainAxisSize: MainAxisSize.max,
@@ -98,7 +94,12 @@ class HomeScreenState extends State<HomeScreen> {
             child: FractionallySizedBox(
               heightFactor: 0.5,
               child: Container(
-                color: Colors.lime,
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [Colors.lightGreen, Colors.green]),
+                ),
               ),
             ),
           ),
@@ -129,46 +130,6 @@ class HomeScreenState extends State<HomeScreen> {
             );
           },
         ),
-      ),
-    );
-  }
-
-  List<Widget> _buildMapTrees(double _screenHeight) {
-    List<Widget> output = [];
-
-    for (Tree tree in GameProcess().trees) {
-      output.add(
-        Positioned(
-          left: _screenHeight / (Values.mapSizeX * 2) * tree.pos.x +
-              _screenHeight / 2 -
-              2.5,
-          top: _screenHeight / (Values.mapSizeY * 2) * tree.pos.y +
-              _screenHeight / 2 -
-              2.5,
-          child: Container(
-            color: Colors.green,
-            width: 5.0,
-            height: 5.0,
-          ),
-        ),
-      );
-    }
-
-    return output;
-  }
-
-  Widget _buildMapPlayer(double _screenHeight) {
-    return Positioned(
-      left: _screenHeight / (Values.mapSizeX * 2) * GameProcess().player.pos.x +
-          _screenHeight / 2 -
-          2.5,
-      top: _screenHeight / (Values.mapSizeY * 2) * GameProcess().player.pos.y +
-          _screenHeight / 2 -
-          2.5,
-      child: Container(
-        color: Colors.red,
-        width: 5.0,
-        height: 5.0,
       ),
     );
   }
@@ -240,5 +201,54 @@ class HomeScreenState extends State<HomeScreen> {
     }
 
     return output;
+  }
+
+  Widget _buildMap(double _screenHeight) {
+    return Stack(
+      children: [
+        ..._buildMapTrees(_screenHeight),
+        _buildMapPlayer(_screenHeight),
+      ],
+    );
+  }
+
+  List<Widget> _buildMapTrees(double _screenHeight) {
+    List<Widget> output = [];
+
+    for (Tree tree in GameProcess().trees) {
+      output.add(
+        Positioned(
+          left: _screenHeight / (Values.mapSizeX * 2) * tree.pos.x +
+              _screenHeight / 2 -
+              2.5,
+          top: _screenHeight / (Values.mapSizeY * 2) * tree.pos.y +
+              _screenHeight / 2 -
+              2.5,
+          child: Container(
+            color: Colors.black,
+            width: 5.0,
+            height: 5.0,
+          ),
+        ),
+      );
+    }
+
+    return output;
+  }
+
+  Widget _buildMapPlayer(double _screenHeight) {
+    return Positioned(
+      left: _screenHeight / (Values.mapSizeX * 2) * GameProcess().player.pos.x +
+          _screenHeight / 2 -
+          2.5,
+      top: _screenHeight / (Values.mapSizeY * 2) * GameProcess().player.pos.y +
+          _screenHeight / 2 -
+          2.5,
+      child: Container(
+        color: Colors.red,
+        width: 5.0,
+        height: 5.0,
+      ),
+    );
   }
 }
